@@ -38,3 +38,15 @@ services:
     networks:
       diameter_net:
         ipv4_address: 198.19.0.200
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile2
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8090
+    volumes:
+      - .:/app
+    ports:
+      - 8090:8090
+    networks:
+      diameter_net:
+        ipv4_address: 198.19.0.220
