@@ -32,9 +32,15 @@ const requestListener = function (req, res) {
     });
     req.on('end', () => {
         let raw_data = JSON.parse(body);
-        try {
-            raw_data.serviceInformation.psInformation["3gppChargingId"] = Buffer.from(raw_data.serviceInformation.psInformation["3gppChargingId"], 'utf-8');
-        } catch {}
+        let must_be_buffer = [
+            "3gppChargingId", "3gppMsTimezone",
+            "3gppUserLocationInfo", "3gppRatType"
+        ];
+        must_be_buffer.forEach((mbb) => {
+            try {
+                raw_data.serviceInformation.psInformation[mbb] = Buffer.from(raw_data.serviceInformation.psInformation[mbb], 'utf-8');
+            } catch {}
+        })
         let forward_data = diameter_avp.fromObject(raw_data);
         console.log("%", forward_data);
         var socket = diameter.createConnection(options, function() {
