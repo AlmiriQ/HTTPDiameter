@@ -29,13 +29,29 @@ def to_avp(json):
 			  }],
 			  "userName": 'hackaton',
 			  "ccRequestType": 'INITIAL_REQUEST',
+			  "ccRequestNumber": 17,
 			  "sessionId": json.SESSION_ID,
+			  "originStateId": 20,
+			  "eventTimestamp": '8.32251@3gpp.org',
+			  "userEquipmentInfo":{
+			  	"userEquipmentInfoType": 'IMEISV',
+			  	"userEquipmentInfoValue": json.IMEI
+			  },
 			  "serviceInformation": {
 			  	'psInformation': {
 				  	"3gppChargingId": 'abc123',
 				  	"pdnConnectionChargingId": 2882343476,
 				  	"3gppPdpType": 'IPv4',
 				  	"pdpAddress": '1.1.1.1',
+				  	"qosInformation": {
+				  		"qosClassIdentifier": 'QCI_8',
+				  		"allocationRetentionPriority": {
+				  			"priorityLevel": 2
+				  		},
+				  		"apnAggregateMaxBitrateUl": 100000000,
+				  		"apnAggregateMaxBitrateDl": 100000000
+
+				  	},
 				  	"dynamicAddressFlag": 'Dynamic',
 				  	"sgsnAddress": '2.2.2.2',
 				  	"ggsnAddress": '3.3.3.3',
