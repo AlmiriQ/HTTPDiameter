@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+
+ DiameterPeer Parameters 
+  - FQDN - FQDN of this peer, as it should apper in the Origin-Host AVP
+  - Realm - Realm of this peer, as it should apper in the Origin-Realm AVP
+  - Vendor_Id - Default Vendor-Id to appear in the Capabilities Exchange
+  - Product_Name - Product Name to appear in the Capabilities Exchange 
+  - AcceptUnknownPeers - Whether to accept (1) or deny (0) connections from peers with FQDN 
+    not configured below
+  - DropUnknownOnDisconnect - Whether to drop (1) or keep (0) and retry connections (until restart)
+    unknown peers in the list of peers after a disconnection.
+  - Tc - Value for the RFC3588 Tc timer - default 30 seconds
+  - Workers - Number of incoming messages processing workers forked processes.
+  - Queue - Length of queue of tasks for the workers:
+     - too small and the incoming messages will be blocked too often;
+     - too large and the senders of incoming messages will have a longer feedback loop to notice that
+     this Diameter peer is overloaded in processing incoming requests;
+     - a good choice is to have it about 2 times the number of workers. This will mean that each worker
+     will have about 2 tasks in the queue to process before new incoming messages will start to block.
+  - ConnectTimeout - time in seconds to wait for an outbound TCP connection to be established.
+  - TransactionTimeout - time in seconds after which the transaction timeout callback will be fired,
+    when using transactional processing.
+  - SessionsHashSize - size of the hash-table to use for the Diameter sessions. When searching for a 
+    session, the time required for this operation will be that of sequential searching in a list of 
+    NumberOfActiveSessions/SessionsHashSize. So higher the better, yet each hashslot will consume an
+    extra 2xsizeof(void*) bytes (typically 8 or 16 bytes extra).
+  - DefaultAuthSessionTimeout - default value to use when there is no Authorization Session Timeout 
+  AVP present.
+  - MaxAuthSessionTimeout - maximum Authorization Session Timeout as a cut-out measure meant to
+  enforce session refreshes.
+      
+ -->
+
+<DiameterPeer
+    FQDN="ocs1.hackaton.uisi.ru"
+    Realm="hackaton.uisi.ru"
+    Vendor_Id="65500"
+    Product_Name="mock OCS"
+    AcceptUnknownPeers="0"
+    DropUnknownOnDisconnect="1"
+    Tc="30"
+    Workers="4"
+    QueueLength="32"
+    ConnectTimeout="5"
+    TransactionTimeout="5"
+    SessionsHashSize="128"
+    DefaultAuthSessionTimeout="60"
+    MaxAuthSessionTimeout="300"
+>
+
+    <!--
+                Definition of peers to connect to and accept connections from. For each peer found in here
+                a dedicated receiver process will be forked. All other unkwnown peers will share a single
+                receiver. NB: You must have a peer definition for each peer listed in the realm routing section
+        -->
+    <Peer FQDN="ocs1.hackaton.uisi.ru" Realm="hackaton.uisi.ru" port="3868" />
+    <Peer FQDN="pgw1.hackaton.uisi.ru" Realm="hackaton.uisi.ru" port="3868" />
+
+    <!--
+                Definition of incoming connection acceptors. If no bind is specified, the acceptor will bind
+                on all available interfaces.
+        -->
+    <Acceptor port="3868" bind="127.0.0.1" />
+
+    <!--
+                Definition of Auth (authorization) and Acct (accounting) supported applications. This
+                information is sent as part of the Capabilities Exchange procedures on connecting to
+                peers. If no common application is found, the peers will disconnect. Messages will only
+                be sent to a peer if that peer actually has declared support for the application id of 
+                the message.
+        -->
+    <!-- Gx Rel6 -->
+    <Acct id="16777224" vendor="10415" />
+    <Auth id="16777224" vendor="10415" />
+
+    <!-- Gx Rel8 - ->
+        <Acct id="16777238" vendor="10415" />
+        <Auth id="16777238" vendor="10415"/>
+        -->
+
+    <!-- Gy -->
+    <Acct id="4" vendor="0" />
+    <Auth id="4" vendor="0" />
+
+    <!-- 
+                Supported Vendor IDs - list of values which will be sent in the CER/CEA in the
+                Supported-Vendor-ID AVPs
+        -->
+    <SupportedVendor vendor="10415" />
+    <SupportedVendor vendor="0" />
+    <!--
+                Realm routing definition.
+                Each Realm can have a different table of peers to route towards. In case the Destination
+                Realm AVP contains a Realm not defined here, the DefaultRoute entries will be used.
+
+                Note: In case a message already contains a Destination-Host AVP, Realm Routeing will not be
+                applied.
+                Note: Routing will only happen towards connected and application id supporting peers.
+                
+                The metric is used to order the list of prefered peers, while looking for a connected and
+                application id supporting peer. In the end, of course, just one peer will be selected.
+        -->
+    <!-- 
+            <Realm name="ims.smilecoms.com">
+                <Route FQDN="pcrf1.ims.smilecoms.com" metric="3"/>
+                <Route FQDN="pcrf2.ims.smilecoms.com" metric="5"/>
+        </Realm>
+
+        <Realm name="temp.ims.smilecoms.com">
+                <Route FQDN="pcrf3.ims.smilecoms.com" metric="7"/>
+                <Route FQDN="pcrf4.ims.smilecoms.com" metric="11"/>
+        </Realm>
+        <DefaultRoute FQDN="pcrf5.ims.smilecoms.com" metric="15"/>
+        <DefaultRoute FQDN="pcrf6.ims.smilecoms.com" metric="13"/>
+-->
+
+</DiameterPeer>

@@ -1,0 +1,40 @@
+
+#
+# Define internal network
+#  
+networks:
+  diameter_net:
+   ipam:
+    config:
+      - subnet: 198.19.0.0/24
+
+#
+# Each service should use static IP, as in real telecom networks
+#
+services:
+  ocs1:
+    container_name: ocs1
+    hostname: ocs1.hackaton.uisi.ru
+    image: ghcr.io/kamailio/kamailio-ci:5.6.4
+    volumes:
+      - ./etc/kamailio-ocs:/etc/kamailio
+    networks:
+      diameter_net:
+        ipv4_address: 198.19.0.254
+  pgw1.hackaton.uisi.ru:
+    container_name: pgw1
+    hostname: pgw1.hackaton.uisi.ru
+    depends_on:
+      - ocs1
+    build:
+      context: .
+      dockerfile: Dockerfile
+#    image: node:21
+    volumes:
+      - ./index.js:/app/index.js
+    ports:
+      - "8000:8000"
+#    commands: node index.js
+    networks:
+      diameter_net:
+        ipv4_address: 198.19.0.200

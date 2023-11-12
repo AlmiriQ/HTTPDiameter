@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DiameterPeer
+    FQDN="ocs1.hackaton.uisi.ru"
+    Realm="hackaton.uisi.ru"
+    Vendor_Id="10415"
+    Product_Name="UISI Hackaton OCS Server"
+    AcceptUnknownPeers="1"
+    DropUnknownOnDisconnect="1"
+    Tc="30"
+    Workers="4"
+    QueueLength="8"
+    TransactionTimeout="5"
+    SessionsHashSize="128"
+    DefaultAuthSessionTimeout="3600"
+    MaxAuthSessionTimeout="3600"
+>
+    <Peer FQDN="pgw1.hackaton.uisi.ru" Realm="hackaton.uisi.ru" port="3868" />
+
+    <Acceptor port="3868" bind="198.19.0.254" />
+
+    <Auth id="4" vendor="10415" />
+</DiameterPeer>

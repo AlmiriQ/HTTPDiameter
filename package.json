@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "diameter": "^0.10.2",
+    "diameter-avp-object": "^1.1.0",
+    "diameter-dictionary": "^1.0.3"
+  }
+}
